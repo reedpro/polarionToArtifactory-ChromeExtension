@@ -1,12 +1,11 @@
 
 function run(elem) {
-  const extensionID = chrome.runtime.id;
   const el = document.createElement("div")
   el.id = "artifactoryReady"
   document.body.appendChild(el)
 
   elem.addEventListener("click", function (event) {
-    path = event.target.closest("a").getAttribute('onclick').split("encodeURIComponent('")[1].split("'")[0];
+    var path = event.target.closest("a").getAttribute('onclick').split("encodeURIComponent('")[1].split("'")[0];  
     var input = document.createElement('input');
     input.type = 'file';
     input.onchange = e => {
@@ -32,7 +31,7 @@ function run(elem) {
         reader.readAsArrayBuffer(input.files[0])
       
     }
-    input.click();
+    input.click();  
   }, false);
 
 }
@@ -45,38 +44,24 @@ function fileToJson(res) {
   return JSON.stringify({dataURL})
 }
 
-
-
-function artifactoryClick(path) {
-  alert(path)
-  
-  var input = document.createElement('input');
-  input.type = 'file';
-  input.click();
-}
-
 function waitForElm(selector) {
   return new Promise(resolve => {
     if (document.querySelector(selector)) {
       return resolve(document.querySelector(selector));
     }
 
-    const observer = new MutationObserver(mutations => {
-      if (document.querySelector(selector)) {
-        resolve(document.querySelector(selector));
-        observer.disconnect();
-      }
-    });
-
-    observer.observe(document.body, {
-      childList: true,
-      subtree: true
-    });
   });
 }
 
-waitForElm("#test > span > span > a").then((elm) => {
-  run(elm)
+const observer = new MutationObserver(mutations => {
+  var ele = document.querySelector("#test > span > span > a")
+  if (ele && ele.dataset.hasListener != "1") {
+    ele.dataset.hasListener = "1";
+    run(ele)
+  }
 });
 
-
+observer.observe(document.body, {
+  childList: true,
+  subtree: true
+});
